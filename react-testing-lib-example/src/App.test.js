@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 
 describe('TEST APP', () => {
@@ -23,6 +24,29 @@ describe('TEST APP', () => {
     expect(helloWorldElem).toHaveStyle({color:'red'})
     screen.debug();
   });
-  
+
+  test("CLICK EVENT", () => {
+    render(<App />);
+    const btn = screen.getByTestId('toggle-btn');
+    expect(screen.queryByTestId('toggle-elem')).toBeNull();
+    fireEvent.click(btn);
+    expect(screen.queryByTestId('toggle-elem')).toBeInTheDocument();
+    fireEvent.click(btn);
+    expect(screen.queryByTestId('toggle-elem')).toBeNull();
+  });
+
+  test("INPUT EVENT", () => {
+    render(<App />);
+    const input = screen.getByPlaceholderText(/input value/i);
+    expect(screen.queryByTestId('value-elem')).toContainHTML('');
+    // Искусственное событие
+    // fireEvent.input(input, {
+    //   target: {value:'123123'}
+    // });
+
+    // близко к пользователю, обрабатываются события нажатия и тд
+    userEvent.type(input, '123123')
+    expect(screen.queryByTestId('value-elem')).toContainHTML('123123');
+  });
 })
 
